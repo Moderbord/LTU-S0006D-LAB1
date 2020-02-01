@@ -16,16 +16,16 @@ class GameManager:
         self.entityManager.Register(entity)
 
     def GetEntityName(self, ID):
-        return self.entityManager.GetFromID(ID).eName
+        return self.entityManager.GetFromID(ID).name
 
     def GetEntity(self, ID):
         return self.entityManager.GetFromID(ID)
 
-    def Broadcast(self, delay, senderID, receiverID, msg, extraInfo):
-        log("At loop " + str(self.gameTime.GetLoop()) + ", " + str(self.entityManager.GetFromID(senderID).eName) +
-        " sent message to " + str(self.entityManager.GetFromID(receiverID).eName) + " with message: " +
+    def Broadcast(self, delay, sender, receiverID, msg, extraInfo):
+        log("At loop " + str(self.gameTime.GetLoop()) + ", " + str(self.entityManager.GetFromID(sender.GetID()).name) +
+        " sent message to " + str(self.entityManager.GetFromID(receiverID).name) + " with message: " +
         str(msg) + ". Delay: " + str(delay))
-        self.messageDispatcher.DispatchMessage(delay, senderID, receiverID, msg, extraInfo)
+        self.messageDispatcher.DispatchMessage(delay, sender.GetID(), receiverID, msg, extraInfo)
 
     def NextTimeStep(self):
         self.gameTime.NextTimestep()

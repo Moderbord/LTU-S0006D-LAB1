@@ -7,6 +7,6 @@ def sysout(msg):
     sleep(updateIntervall)
 
 def out(entity, msg):
-    print(entity.eName + ": " + msg)
+    print(entity.name + ": " + msg)
     sleep(updateIntervall)
 

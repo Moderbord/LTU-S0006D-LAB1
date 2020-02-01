@@ -2,17 +2,17 @@ from s_log import log
 
 class State:
 
-    def Enter(self, gameEntity):
+    def Enter(self, entity):
         pass
 
-    def Execute(self, gameEntity):
+    def Execute(self, entity):
         pass
 
-    def Exit(self, gameEntity):
+    def Exit(self, entity):
         pass
 
-    def OnMessage(self, gameEntity, telegram):
-        log("At loop " + str(gameEntity.gm.GetLoop()) + ", " + gameEntity.eName +
-            " recieved message from " + str(gameEntity.gm.GetEntityName(telegram.senderID)) +
+    def OnMessage(self, entity, telegram):
+        log("At loop " + str(entity.gm.GetLoop()) + ", " + entity.name +
+            " recieved message from " + str(entity.gm.GetEntityName(telegram.senderID)) +
             " with message: " + str(telegram.msg) + ". Dispatch time: " +
              str(telegram.dispatchTime))
