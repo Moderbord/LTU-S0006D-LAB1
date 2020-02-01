@@ -3,37 +3,51 @@ from message_dispatcher import MessageDispatcher
 from game_time import GameTime
 from s_log import log
 
-__entityManager = EntityManager()
-__messageDispatcher = MessageDispatcher()
-__gameTime = GameTime()
+class GameManager:
 
-def AddEntity(entity):
-    __entityManager.Register(entity)
+    def __init__(self):
+        self.entityManager = EntityManager()
+        self.messageDispatcher = MessageDispatcher(self)
+        self.gameTime = GameTime()
 
-def GetEntityName(ID):
-    return __entityManager.GetFromID(ID).eName
+    def AddEntity(self, entity):
+        # Give reference to game manager to new entity
+        entity.gm = self
+        self.entityManager.Register(entity)
 
-def GetEntity(ID):
-    return __entityManager.GetFromID(ID)
+    def GetEntityName(self, ID):
+        return self.entityManager.GetFromID(ID).eName
 
-def Broadcast(delay, senderID, receiverID, msg, extraInfo):
-    log("At loop " + str(__gameTime.GetLoop()) + ", " + str(__entityManager.GetFromID(senderID).eName) +
-     " sent message to " + str(__entityManager.GetFromID(receiverID).eName) + " with message: " +
-      str(msg) + ". Delay: " + str(delay))
-    __messageDispatcher.DispatchMessage(delay, senderID, receiverID, msg, extraInfo)
+    def GetEntity(self, ID):
+        return self.entityManager.GetFromID(ID)
 
-def NextTimeStep():
-    __gameTime.NextTimestep()
+    def Broadcast(self, delay, senderID, receiverID, msg, extraInfo):
+        log("At loop " + str(self.gameTime.GetLoop()) + ", " + str(self.entityManager.GetFromID(senderID).eName) +
+        " sent message to " + str(self.entityManager.GetFromID(receiverID).eName) + " with message: " +
+        str(msg) + ". Delay: " + str(delay))
+        self.messageDispatcher.DispatchMessage(delay, senderID, receiverID, msg, extraInfo)
 
-def GetTime():
-    return __gameTime.GetTime()
+    def NextTimeStep(self):
+        self.gameTime.NextTimestep()
 
-def GetWeekday():
-    return __gameTime.GetWeekday()
+    def HoursTo(self, time):
+        return self.gameTime.HoursTo(time)
 
-def NextLoop():
-    __gameTime.NextLoop()
+    def GetTime(self):
+        return self.gameTime.GetTime()
 
-def GetLoop():
-    return __gameTime.GetLoop()
+    def GetTimeStr(self):
+        return self.gameTime.GetTimeStr()
+
+    def GetWeekday(self):
+        return self.gameTime.GetWeekday()
+
+    def GetWeekdayStr(self):
+        return self.gameTime.GetWeekdayStr()
+
+    def NextLoop(self):
+        self.gameTime.NextLoop()
+
+    def GetLoop(self):
+        return self.gameTime.GetLoop()
 

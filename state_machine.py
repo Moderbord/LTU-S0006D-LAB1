@@ -21,7 +21,7 @@ class StateMachine:
         
     def ChangeState(self, newState):
         if(self.currentState and newState):
-            log(str(self.owner) + " transition from " + str(self.currentState) + " to " + str(newState))
+            log(str(type(self.owner)) + " transition from " + str(type(self.currentState)) + " to " + str(type(newState)))
             self.previousState = self.currentState
             self.currentState.Exit(self.owner)
             self.currentState = newState
@@ -29,14 +29,14 @@ class StateMachine:
 
     def EnterStateBlip(self, stateBlip):
         if(self.currentState and stateBlip):
-            log(str(self.owner) + " transition from " + str(self.currentState) + " to " + str(stateBlip))
+            log(str(type(self.owner)) + " transition from " + str(type(self.currentState)) + " to " + str(type(stateBlip)))
             self.previousState = self.currentState
             self.currentState = stateBlip
             self.currentState.Enter(self.owner)
 
     def RevertToPriorState(self):
         if(self.currentState and self.previousState):
-            log(str(self.owner) + " reverting from " + str(self.currentState) + " to " + str(self.previousState))
+            log(str(type(self.owner)) + " reverting from " + str(type(self.currentState)) + " to " + str(type(self.previousState)))
             self.currentState.Exit(self.owner)
             self.currentState = self.previousState
 

@@ -12,10 +12,10 @@ class BaseGameEntity:
         self.eLocation = globals.locations[globals.LOC_DEFAULT]
         self.eInventory = {}
         self.eMoney = 50
-        self.eThirst = 50
+        self.eThirst = 75
         self.eHunger = 50
         self.eFatigue = 50
-        self.eSocial = 50
+        self.eSocial = 75
         
         self.isAlive = True
         self.isWorking = False
@@ -73,7 +73,7 @@ class BaseGameEntity:
         return self.eThirst <= 40
 
     def IsHungry(self):
-        return self.eHunger <= 35
+        return self.eHunger <= 30
 
     def IsTired(self):
         return self.eFatigue <= 25

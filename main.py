@@ -6,7 +6,7 @@ import entity_hulk
 
 from s_log import log
 from s_print import sysout
-import game_manager as gm
+from game_manager import GameManager
 import globals
 
 
@@ -14,6 +14,8 @@ import globals
 log("-------- NEW RUN --------\n")
 
 #inits
+gm = GameManager()
+
 hulk = entity_hulk.Hulk(globals.id_hulk, "Hulk")
 gm.AddEntity(hulk)
 
@@ -27,26 +29,26 @@ gm.AddEntity(hulk)
 loops = 720
 for i in range(loops):
 
-    gm.NextTimeStep()
-    gm.currentLoop = i
-
     # logs before update
-    sysout(gm.GetWeekday() + " " + gm.GetTime() + ", Update loop: " + str(i))
-    #log("¤--> Update loop: " + str(i) + "\n")
-    #log("<Pre vals>")
+    sysout(gm.GetWeekdayStr() + " " + gm.GetTimeStr() + ", Update loop: " + str(i))
+    log("¤--> " + gm.GetWeekdayStr() + " " + gm.GetTimeStr() + ", Update loop: " + str(i) + "\n")
+    log("<Pre vals>")
     hulk.logStates()
 
     # Game update
-    #log("\n<update>")
-    gm.__messageDispatcher.DispatchDelayedMessage()
+    log("\n<update>")
+    gm.messageDispatcher.DispatchDelayedMessage()
     # Entities goes here
     hulk.Update()
 
     # logs after update
-    #log("\n<Post vals>")
+    log("\n<Post vals>")
     hulk.logStates()
-    #log("")
+    log("")
     print("\n")
+
+    gm.NextTimeStep()
+    gm.NextLoop()
 
 # End of run
 log("-------- END OF RUN --------\n")

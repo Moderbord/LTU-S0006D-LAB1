@@ -1,5 +1,4 @@
 from s_log import log
-import game_manager
 
 class State:
 
@@ -13,7 +12,7 @@ class State:
         pass
 
     def OnMessage(self, gameEntity, telegram):
-        log("At loop " + str(game_manager.currentLoop) + ", " + gameEntity.eName +
-            " recieved message from " + str(game_manager.GetEntityName(telegram.senderID)) +
+        log("At loop " + str(gameEntity.gm.GetLoop()) + ", " + gameEntity.eName +
+            " recieved message from " + str(gameEntity.gm.GetEntityName(telegram.senderID)) +
             " with message: " + str(telegram.msg) + ". Dispatch time: " +
              str(telegram.dispatchTime))

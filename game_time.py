@@ -1,7 +1,7 @@
 class GameTime:
 
     def __init__(self):
-        self.time = 5
+        self.time = 22
         self.weekday = 6
         self.loop = 0
 
@@ -12,7 +12,16 @@ class GameTime:
         else:
             self.time += 1
 
+    def HoursTo(self, hour):
+        if(hour > self.time):
+            return hour - self.time
+        else:
+            return (24 - self.time) + hour
+
     def GetTime(self):
+        return self.time
+
+    def GetTimeStr(self):
         timesteps = {
             0: "00:00",
             1: "01:00",
@@ -42,20 +51,23 @@ class GameTime:
         return timesteps.get(self.time)
 
     def NextWeekday(self):
-        if(self.weekday == 7):
-            self.weekday = 1
+        if(self.weekday == 6):
+            self.weekday = 0
         else:
             self.weekday += 1
 
     def GetWeekday(self):
+        return self.weekday
+
+    def GetWeekdayStr(self):
         weekdays = {
-            1: "Monday",
-            2: "Tuesday",
-            3: "Wednesday",
-            4: "Thursday",
-            5: "Friday",
-            6: "Saturday",
-            7: "Sunday"
+            0: "Monday",
+            1: "Tuesday",
+            2: "Wednesday",
+            3: "Thursday",
+            4: "Friday",
+            5: "Saturday",
+            6: "Sunday"
         }
         return weekdays.get(self.weekday)
 
