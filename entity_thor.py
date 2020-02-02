@@ -44,19 +44,7 @@ class ThorGlobalstate(State):
         pass
 
     def OnMessage(self, entity, telegram):
-        if(telegram.msg == G.MSG.GoWork and not entity.IsSleeping()):
-            super().OnMessage(entity, telegram)
-
-            if(entity.HasItem("MJOLNIR")):
-                out(entity, "Stupid mortals and their silly working habit! I have better things to do than work. Pwning noobs, for example..")
-            elif(entity.isHome()):
-                out(entity, "I do need a new hammer.. A god cannot be without his mighty weapon! Of to work!")
-                entity.fsm.ChangeState(ThorTraverse())
-                # Thor is fast
-                entity.gm.Broadcast(1, entity, G.ID.Thor, G.MSG.ArriveWork, None)
-            return True
-
-        return False
+        pass
 
 ##------------------------------------------------------------------##
 class ThorAtHome(State):
@@ -72,17 +60,23 @@ class ThorAtHome(State):
         elif(randint(0, 9) > 3):
             out(entity, "'Of course! You all need cheats to beat me!'")
         else:
-            out(entity, "*reads* 'I'm-gonna-teabag-your-mom.' 'Pfff, puny insults!'")
+            out(entity, "*Reads* 'I'm-gonna-teabag-your-mom.' 'Pfff, puny insults!'")
 
     def Exit(self, entity):
         entity.isHome = False
         out(entity, "*Leaves home*")
 
     def OnMessage(self, entity, telegram):
-        if(telegram.msg == G.MSG.GoWork):
+        if(telegram.msg == G.MSG.GoWork and not entity.IsSleeping()):
             super().OnMessage(entity, telegram)
-            entity.fsm.ChangeState(ThorTraverse())
-            entity.gm.Broadcast(1, entity, G.ID.Thor, G.MSG.ArriveWork, None)
+
+            if(entity.HasItem("MJOLNIR")):
+                out(entity, "Stupid mortals and their silly working habit! I have better things to do than work. Pwning noobs, for example..")
+            else:
+                out(entity, "I do need a new hammer.. A god cannot be without his mighty weapon! Of to work!")
+                entity.fsm.ChangeState(ThorTraverse())
+                # Thor is fast
+                entity.gm.Broadcast(1, entity, G.ID.Thor, G.MSG.ArriveWork, None)
             return True
 
         return False
@@ -93,7 +87,7 @@ class ThorAtWork(State):
     def Enter(self, entity):
         entity.isWorking = True
         out(entity, "*Arrives at work*")
-        out(entity, "'Lets see what needs cleaning today...'")
+        out(entity, "'Lets see what needs cleaning...'")
 
     def Execute(self, entity):
         out(entity, "*Cleaning*")
