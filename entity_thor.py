@@ -20,7 +20,6 @@ class Thor(BaseGameEntity):
         self.isHome = True
         self.planGoMovies = False
         self.aloneAtMovies = True
-        self.wathingMovie = False
         #self.AddItem("MJOLNIR")
 
 ##------------------------------------------------------------------##
@@ -40,7 +39,7 @@ class ThorGlobalstate(State):
                 # Thor reminds himself to get to work (depending on state)
                 entity.gm.Broadcast(0, entity, G.ID.Thor, G.MSG.GoWork, None)
 
-        if(entity.IsTired() and not entity.wathingMovie):
+        if(entity.IsTired()):
             entity.fsm.EnterStateBlip(ThorSleep())
 
 
@@ -87,8 +86,19 @@ class ThorAtHome(State):
 
     def Execute(self, entity):
 
+        # Make a feast fit for a god
+        if(entity.IsHungry() and entity.IsThirsty() and entity.IsHome() and not entity.IsSleeping()):
+            out(entity, "*Stomach rumbles* 'RIGHT! TIME FOR A FEAST!'")
+            out(entity, "*Claps hands* *A huge dining table appears, filled with food and drinks of all kind*")
+            out(entity, "'Time to eat and drink befitting the god of thunder!'")
+            out(entity, "*Eats like a proper god*")
+            entity.hunger += 50
+            entity.thirst += 50
+            # Tiresome to summon all this delicacy
+            entity.fatigue -= 25
+
         # Make plan to go movie with friends
-        if(entity.IsLonely() and not entity.planGoMovies):
+        elif(entity.IsLonely() and not entity.planGoMovies):
             out(entity, "'Hey! Maybe the fellows are up to go to the movies?'")
             out(entity, "---> Everyone #Hello everybody! I was thinking of going to the movies tomorrow at 21:00! Hope you want to join me!#")
             timeToMeet = entity.gm.HoursTo(21) + (24 if entity.gm.GetTime() <= 21 else 0)
@@ -226,6 +236,7 @@ class ThorAtMovies(State):
         out(entity, "*Exits the movie saloon*")
         entity.planGoMovies = False
         entity.wathingMovie = False
+        entity.social = 70
 
     def OnMessage(self, entity, telegram):
         if(telegram.msg == G.MSG.MovieOver):

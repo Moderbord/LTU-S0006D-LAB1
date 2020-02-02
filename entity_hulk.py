@@ -349,6 +349,7 @@ class HulkAtMovies(State):
         out(entity, "*Exits the movie saloon*")
         entity.planGoMovies = False
         entity.wathingMovie = False
+        entity.social = 50
 
     def OnMessage(self, entity, telegram):
         if(telegram.msg == G.MSG.MovieOver):

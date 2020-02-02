@@ -9,6 +9,7 @@ class MessageDispatcher:
     def __init__(self, gm):
         self.gm = gm
         self.priorityQ = {}
+        # TODO queues for separate entities
 
     def __Discharge(self, receiver, msg):
         receiver.HandleMessage(msg)
