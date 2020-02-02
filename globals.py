@@ -16,18 +16,24 @@ class ID(Enum):
     Elsie = 2
     Hulk = 3
     Rocket = 4
+    Thor = 5
 
 
 class MSG(Enum):
-    HulkGoHome = 101
-    HulkGoWork = 102
-    HulkGoStore = 103
-    HulkGoPub = 104
-    HulkArriveHome = 105
-    HulkArriveWork = 106
-    HulkArriveStore = 107
-    HulkArrivePub = 108
-    HulkWakeUp = 109
+    GoHome = 101
+    ArriveHome = 102
+    GoWork = 103
+    ArriveWork = 104
+    GoStore = 105
+    ArriveStore = 106
+    GoPub = 107
+    ArrivePub = 108
+    GoMovies = 109
+    ArriveMovies = 110
+
+    WakeUp = 201
+    PizzaDelivery = 202
+    HulkArrivePub = 203
 
     D_HulkAskRocketIfWorking_1 = 1001
     D_HulkAskRocketIfWorking_2 = 1002
@@ -39,10 +45,4 @@ class MSG(Enum):
     D_HulkRocketPub_5 = 1014
     D_HulkRocketPub_6 = 1015
 
-    RocketGoHome = 201
-    RocketGoWork = 202
-    RocketArriveHome = 203
-    RocketArriveWork = 204
-    RocketWakeUp = 205
-    RocketPizzaDelivery = 206
 

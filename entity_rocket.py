@@ -1,5 +1,4 @@
 from random import randint
-from enum import Enum
 
 from base_game_entity import BaseGameEntity
 from state import State
@@ -55,15 +54,15 @@ class RocketGlobalstate(State):
         if(entity.gm.GetTime() == 8 and entity.IsWorking()):
             out(entity, "*Yawn* 'Time to head home!'")
             entity.fsm.ChangeState(RocketTraverse())
-            entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.RocketArriveHome, None)
+            entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.ArriveHome, None)
 
         if(entity.gm.GetTime() == 18 and entity.IsHome()):
             if(entity.IsSleeping()):
-                entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.RocketWakeUp, None)
+                entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.WakeUp, None)
             else:
                 out(entity, "'Back to work at the bar!'")
                 entity.fsm.ChangeState(RocketTraverse())
-                entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.RocketArriveWork, None)
+                entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.ArriveWork, None)
 
 
     def Exit(self, entity):
@@ -90,7 +89,7 @@ class RocketAtHome(State):
     def Execute(self, entity):
         if(entity.IsHungry() and entity.money >= 45 and not entity.orderedPizza):
             out(entity, "*Orders pizza*")
-            entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.RocketPizzaDelivery, None)
+            entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.PizzaDelivery, None)
             entity.money -= 45
             entity.orderedPizza = True
 
@@ -102,7 +101,7 @@ class RocketAtHome(State):
         entity.isHome = False
 
     def OnMessage(self, entity, telegram):
-        if(telegram.msg == G.MSG.RocketPizzaDelivery):
+        if(telegram.msg == G.MSG.PizzaDelivery):
             super().OnMessage(entity, telegram)
 
             out(entity, "*Doorbell rings* 'PIZZA TIME!'")
@@ -127,7 +126,7 @@ class RocketAtHomeSleep(State):
         entity.fatigue = 90
 
     def OnMessage(self, entity, telegram):
-        if(telegram.msg == G.MSG.RocketPizzaDelivery):
+        if(telegram.msg == G.MSG.PizzaDelivery):
             super().OnMessage(entity, telegram)
 
             out(entity, "*Doorbell rings* 'PIZZA TIME!'")
@@ -136,11 +135,11 @@ class RocketAtHomeSleep(State):
             entity.hunger = 100
             return True
         
-        elif(telegram.msg == G.MSG.RocketWakeUp):
+        elif(telegram.msg == G.MSG.WakeUp):
             out(entity, "*Yaaaawn* 'I guess it's back to work..'")
             entity.fsm.RevertToPriorState()
             entity.fsm.ChangeState(RocketTraverse())
-            entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.RocketArriveWork, None)
+            entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.ArriveWork, None)
             return True
 
         return False
@@ -242,12 +241,12 @@ class RocketTraverse(State):
         entity.isTraversing = False
 
     def OnMessage(self, entity, telegram):
-        if(telegram.msg == G.MSG.RocketArriveHome):
+        if(telegram.msg == G.MSG.ArriveHome):
             super().OnMessage(entity, telegram)
             entity.fsm.ChangeState(RocketAtHome())
             return True
 
-        elif(telegram.msg == G.MSG.RocketArriveWork):
+        elif(telegram.msg == G.MSG.ArriveWork):
             super().OnMessage(entity, telegram)
             entity.fsm.ChangeState(RocketAtWork())
             return True
