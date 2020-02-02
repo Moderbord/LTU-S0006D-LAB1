@@ -39,8 +39,8 @@ for i in range(loops):
     sysout(gm.GetWeekdayStr() + " " + gm.GetTimeStr() + ", Update loop: " + str(i))
     log("¤--> " + gm.GetWeekdayStr() + " " + gm.GetTimeStr() + ", Update loop: " + str(i) + "\n")
     log("<Pre vals>")
-    #hulk.logStates()
-    #rocket.logStates()
+    hulk.logStates()
+    rocket.logStates()
     thor.logStates()
 
     # Game update
@@ -53,8 +53,8 @@ for i in range(loops):
 
     # logs after update
     log("\n<Post vals>")
-    #hulk.logStates()
-    #rocket.logStates()
+    hulk.logStates()
+    rocket.logStates()
     thor.logStates()
     log("")
     print("\n")

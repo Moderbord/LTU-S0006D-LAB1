@@ -16,7 +16,11 @@ class Thor(BaseGameEntity):
         #self.location = G.locations[G.LOC_HULK_HOME]
         self.fsm.globalState = ThorGlobalstate()
         self.fsm.currentState = ThorAtHome()
+        self.social = 26
         self.isHome = True
+        self.planGoMovies = False
+        self.aloneAtMovies = True
+        self.wathingMovie = False
         #self.AddItem("MJOLNIR")
 
 ##------------------------------------------------------------------##
@@ -36,7 +40,7 @@ class ThorGlobalstate(State):
                 # Thor reminds himself to get to work (depending on state)
                 entity.gm.Broadcast(0, entity, G.ID.Thor, G.MSG.GoWork, None)
 
-        if(entity.IsTired()):
+        if(entity.IsTired() and not entity.wathingMovie):
             entity.fsm.EnterStateBlip(ThorSleep())
 
 
@@ -44,7 +48,35 @@ class ThorGlobalstate(State):
         pass
 
     def OnMessage(self, entity, telegram):
-        pass
+        if(telegram.msg == G.MSG.GoMovies):
+            super().OnMessage(entity, telegram)
+
+            if(entity.IsSleeping()):
+                out(entity, "*Wakes up* 'Oh right madam! To the movies!'")
+            else:
+                out(entity, "'To the movies!'")
+
+            entity.fsm.ChangeState(ThorTraverse())
+            entity.walkingToMovies = True
+            entity.gm.Broadcast(1, entity, G.ID.Thor, G.MSG.ArriveMovies, None)
+            return True
+
+        elif(telegram.msg == G.MSG.HulkArriveMovies):
+            super().OnMessage(entity, telegram)
+            entity.aloneAtMovies = False
+            return True
+
+        elif(telegram.msg == G.MSG.RocketArriveMovies):
+            super().OnMessage(entity, telegram)
+            entity.aloneAtMovies = False
+            return True
+
+        elif(telegram.msg == G.MSG.GrootArriveMovies):
+            super().OnMessage(entity, telegram)
+            entity.aloneAtMovies = False
+            return True
+
+        return False
 
 ##------------------------------------------------------------------##
 class ThorAtHome(State):
@@ -54,13 +86,28 @@ class ThorAtHome(State):
         out(entity, "*Enters home*")
 
     def Execute(self, entity):
-        out(entity, "*Playing video games*")
-        if(randint(0, 9) > 5):
-            out(entity, "'HA! Suck on that'")
-        elif(randint(0, 9) > 3):
-            out(entity, "'Of course! You all need cheats to beat me!'")
+
+        # Make plan to go movie with friends
+        if(entity.IsLonely() and not entity.planGoMovies):
+            out(entity, "'Hey! Maybe the fellows are up to go to the movies?'")
+            out(entity, "---> Everyone #Hello everybody! I was thinking of going to the movies tomorrow at 21:00! Hope you want to join me!#")
+            timeToMeet = entity.gm.HoursTo(21) + (24 if entity.gm.GetTime() <= 21 else 0)
+            entity.gm.Broadcast(0, entity, G.ID.Hulk, G.MSG.D_ThorPlanGoMovies_1, timeToMeet)
+            entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.D_ThorPlanGoMovies_1, timeToMeet)
+            #entity.gm.Broadcast(0, entity, G.ID.Groot, G.MSG.D_ThorPlanGoMovies_1, timeToMeet)
+
+            entity.gm.Broadcast(timeToMeet - 1, entity, G.ID.Thor, G.MSG.GoMovies, None)
+            entity.planGoMovies = True
+
+        # Stay home and play games
         else:
-            out(entity, "*Reads* 'I'm-gonna-teabag-your-mom.' 'Pfff, puny insults!'")
+            out(entity, "*Playing video games*")
+            if(randint(0, 9) > 5):
+                out(entity, "'HA! Suck on that'")
+            elif(randint(0, 9) > 3):
+                out(entity, "'Of course! You all need cheats to beat me!'")
+            else:
+                out(entity, "*Reads* 'I'm-gonna-teabag-your-mom.' 'Pfff, puny insults!'")
 
     def Exit(self, entity):
         entity.isHome = False
@@ -155,16 +202,44 @@ class ThorAtStore(State):
 class ThorAtMovies(State):
 
     def Enter(self, entity):
-        pass
+        out(entity, "*Enters the movie saloon*")
+        entity.planGoMovies = False
+        entity.wathingMovie = False
+
+        entity.gm.Broadcast(2, entity, G.ID.Hulk, G.MSG.MovieOver, None)
+        entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.MovieOver, None)
+        entity.gm.Broadcast(2, entity, G.ID.Thor, G.MSG.MovieOver, None)
+        #entity.gm.Broadcast(2, entity, G.ID.Groot, G.MSG.MovieOver, None)
 
     def Execute(self, entity):
-        pass
+        if(entity.wathingMovie):
+            out(entity, "*Watches movie*")
+        else:
+            if(entity.aloneAtMovies):
+                out(entity, "'No one could come!? That sucks! I'll watch the movie alone then!'")
+            else:
+                out(entity, "'Lets go! Before the movie watches itself without us!'")
+            entity.wathingMovie = True
+
 
     def Exit(self, entity):
-        pass
+        out(entity, "*Exits the movie saloon*")
+        entity.planGoMovies = False
+        entity.wathingMovie = False
 
     def OnMessage(self, entity, telegram):
-        pass
+        if(telegram.msg == G.MSG.MovieOver):
+            super().OnMessage(entity, telegram)
+            if(entity.aloneAtMovies):
+                out(entity, "*Movie ended* 'Would be more fun to watch The Avengers with actual friends..'")
+            else:
+                out(entity, "*Movie ended* 'Aren't The Avengers the best movie? Am'a Right? Love the part about me..'")
+                
+            entity.fsm.ChangeState(ThorTraverse())
+            entity.gm.Broadcast(1, entity, G.ID.Thor, G.MSG.ArriveHome, None)
+            return True
+
+        return False
 
 ##------------------------------------------------------------------##
 class ThorSleep(State):
@@ -183,12 +258,11 @@ class ThorSleep(State):
         out(entity, "*Wakes up* '.. OH yes madam straight away...'")
 
     def OnMessage(self, entity, telegram):
-        if(telegram.msg == G.MSG.WakeUp):
-            super().OnMessage(entity, telegram)
-            entity.fsm.RevertToPriorState()
-            return True
-
-        return False
+        super().OnMessage(entity, telegram)
+        # Wake up and resend message
+        entity.fsm.RevertToPriorState()
+        entity.gm.Broadcast(0, entity, G.ID.Thor, telegram.msg, telegram.extraInfo)
+        return True
 
 ##------------------------------------------------------------------##
 class ThorTraverse(State):
