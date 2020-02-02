@@ -39,6 +39,9 @@ class GameManager:
     def GetTimeStr(self):
         return self.gameTime.GetTimeStr()
 
+    def ToTimeStr(self, time):
+        return self.gameTime.ToTimeStr(time)
+
     def GetWeekday(self):
         return self.gameTime.GetWeekday()
 

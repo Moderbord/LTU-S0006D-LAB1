@@ -8,7 +8,7 @@ from s_log import log
 from s_print import out
 import globals as G
 
-# --------------------------------------------------------------- HULK
+##------------------------------HULK------------------------------##
 
 class Hulk(BaseGameEntity):
 
@@ -19,6 +19,7 @@ class Hulk(BaseGameEntity):
         self.fsm.currentState = HulkAtHome()
         self.isHome = True
 
+##------------------------------------------------------------------##
 class HulkGlobalState(State):
 
     def Enter(self, entity):
@@ -50,15 +51,16 @@ class HulkGlobalState(State):
             entity.fsm.ChangeState(HulkTraverse())
             # Arrive in 2 loops
             entity.gm.Broadcast(2, entity, G.ID.Hulk, G.MSG.HulkArriveWork, None)
-
             return True
 
         return False
 
+##------------------------------------------------------------------##
 class HulkAtHome(State):
 
     def Enter(self, entity):
         entity.isHome = True
+        entity.planGoPub = False
 
     def Execute(self, entity):
         #out(entity, "'Hulk at home!'")
@@ -68,13 +70,14 @@ class HulkAtHome(State):
         elif(entity.IsTired()):
             out(entity, "'Hulk tired, go SLEEP!'")
             entity.fsm.EnterStateBlip(HulkAtHomeSleep())
-        elif(entity.IsLonely() and entity.gm.GetTime() > 12):
+        elif(entity.IsLonely() and entity.gm.GetTime() > 12 and not entity.planGoPub):
             out(entity, "'Hulk lonely! Maybe Rocket work?'")
             out(entity, "#You at the pub Rocket?#")
-            entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.D_HulkAsRaccoonIfWorking_1, None)
+            entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.D_HulkAskRocketIfWorking_1, None)
 
     def Exit(self, entity):
         entity.isHome = False
+        entity.planGoPub = False
 
     def OnMessage(self, entity, telegram):
 
@@ -86,21 +89,37 @@ class HulkAtHome(State):
             entity.fsm.ChangeState(HulkTraverse())
             # Arrive in 2 loops
             entity.gm.Broadcast(2, entity, G.ID.Hulk, G.MSG.HulkArriveStore, None)
-
             return True
 
-        elif(telegram.msg == G.MSG.D_HulkAsRaccoonIfWorking_2):
+        elif(telegram.msg == G.MSG.D_HulkAskRocketIfWorking_2):
             super().OnMessage(entity, telegram)
             
             out(entity, "#Hulk come just to smash you!#")
             entity.fsm.ChangeState(HulkTraverse())
             # Arrive in 2 loops
             entity.gm.Broadcast(2, entity, G.ID.Hulk, G.MSG.HulkArrivePub, None)
+            return True
 
+        elif(telegram.msg == G.MSG.D_HulkAskRocketIfWorking_3):
+            super().OnMessage(entity, telegram)
+            
+            out(entity, "#Good! Hulk be at the pub around " + entity.gm.ToTimeStr(entity.gm.GetTime() + telegram.extraInfo) + "#")
+            entity.gm.Broadcast(telegram.extraInfo - 2, entity, G.ID.Hulk, G.MSG.HulkGoPub, None)
+            entity.planGoPub = True
+            return True
+
+        elif(telegram.msg == G.MSG.HulkGoPub):
+            super().OnMessage(entity, telegram)
+            
+            out(entity, "#Hulk walking to pub now!#")
+            entity.fsm.ChangeState(HulkTraverse())
+            # Arrive in 2 loops
+            entity.gm.Broadcast(2, entity, G.ID.Hulk, G.MSG.HulkArrivePub, None)
             return True
 
         return False
 
+##------------------------------------------------------------------##
 class HulkAtHomeDinner(State):
 
     def Enter(self, entity):
@@ -122,6 +141,7 @@ class HulkAtHomeDinner(State):
     def Exit(self, entity):
         pass
 
+##------------------------------------------------------------------##
 class HulkAtHomeSleep(State):
 
     def Enter(self, entity):
@@ -147,6 +167,7 @@ class HulkAtHomeSleep(State):
 
         return False
 
+##------------------------------------------------------------------##
 class HulkAtStore(State):
 
     def Enter(self, entity):
@@ -162,6 +183,7 @@ class HulkAtStore(State):
     def Exit(self, entity):
         pass
 
+##------------------------------------------------------------------##
 class HulkAtWork(State):
 
     def Enter(self, entity):
@@ -187,6 +209,7 @@ class HulkAtWork(State):
 
         return False
 
+##------------------------------------------------------------------##
 class HulkAtPub(State):
 
     def Enter(self, entity):
@@ -213,7 +236,7 @@ class HulkAtPub(State):
 
             return True
 
-        elif(telegram.msg == G.MSG.D_HulkRaccoonPub_1):
+        elif(telegram.msg == G.MSG.D_HulkRocketPub_1):
             super().OnMessage(entity, telegram)
             
             out(entity, "*grabs beer* 'Hulk always calm!'")
@@ -223,6 +246,7 @@ class HulkAtPub(State):
 
         return False
 
+##------------------------------------------------------------------##
 class HulkAtPubChillax(State):
 
     def Enter(self, entity):
@@ -242,13 +266,13 @@ class HulkAtPubChillax(State):
         
         if(entity.gm.HoursTo(9) <= 2):
             out(entity, "'Oh shit! Hulk must go to work!'")
-            entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.D_HulkRaccoonPub_6, None)
+            entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.D_HulkRocketPub_6, None)
             entity.fsm.RevertToPriorState()
             entity.fsm.ChangeState(HulkTraverse())
             entity.gm.Broadcast(2, entity, G.ID.Hulk, G.MSG.HulkArriveWork, None)
         elif(entity.social > 85):
             out(entity, "'Rocket good friend! Hulk must go home now'")
-            entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.D_HulkRaccoonPub_6, None)
+            entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.D_HulkRocketPub_6, None)
             entity.fsm.RevertToPriorState()
             entity.fsm.ChangeState(HulkTraverse())
             entity.gm.Broadcast(2, entity, G.ID.Hulk, G.MSG.HulkArriveHome, None)
@@ -257,18 +281,19 @@ class HulkAtPubChillax(State):
         pass
 
     def OnMessage(self, entity, telegram):
-        if(telegram.msg == G.MSG.D_HulkRaccoonPub_3):
+        if(telegram.msg == G.MSG.D_HulkRocketPub_3):
             super().OnMessage(entity, telegram)
             out(entity, "'Good.. Hulk smash things'")
             return True
 
-        if(telegram.msg == G.MSG.D_HulkRaccoonPub_5):
+        if(telegram.msg == G.MSG.D_HulkRocketPub_5):
             super().OnMessage(entity, telegram)
             out(entity, "'Yes.. Hulk relaxed'")
             return True
 
         return False
 
+##------------------------------------------------------------------##
 class HulkTraverse(State):
 
     def Enter(self, entity):

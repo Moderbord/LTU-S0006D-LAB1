@@ -1,6 +1,6 @@
 from enum import Enum
 
-updateIntervall = 0.4
+updateIntervall = 0.1
 
 # TODO implement locations, coordinates?
 LOC_DEFAULT = "DEFAULT"
@@ -19,22 +19,30 @@ class ID(Enum):
 
 
 class MSG(Enum):
-    HulkGoHome = 1
-    HulkGoWork = 2
-    HulkGoStore = 3
-    HulkGoPub = 4
-    HulkArriveHome = 5
-    HulkArriveWork = 6
-    HulkArriveStore = 7
-    HulkArrivePub = 8
-    HulkWakeUp = 9
+    HulkGoHome = 101
+    HulkGoWork = 102
+    HulkGoStore = 103
+    HulkGoPub = 104
+    HulkArriveHome = 105
+    HulkArriveWork = 106
+    HulkArriveStore = 107
+    HulkArrivePub = 108
+    HulkWakeUp = 109
 
-    D_HulkAsRaccoonIfWorking_1 = 10
-    D_HulkAsRaccoonIfWorking_2 = 11
-    D_HulkRaccoonPub_1 = 12
-    D_HulkRaccoonPub_2 = 13
-    D_HulkRaccoonPub_3 = 14
-    D_HulkRaccoonPub_4 = 15
-    D_HulkRaccoonPub_5 = 16
-    D_HulkRaccoonPub_6 = 17
+    D_HulkAskRocketIfWorking_1 = 1001
+    D_HulkAskRocketIfWorking_2 = 1002
+    D_HulkAskRocketIfWorking_3 = 1003
+    D_HulkRocketPub_1 = 1010
+    D_HulkRocketPub_2 = 1011
+    D_HulkRocketPub_3 = 1012
+    D_HulkRocketPub_4 = 1013
+    D_HulkRocketPub_5 = 1014
+    D_HulkRocketPub_6 = 1015
+
+    RocketGoHome = 201
+    RocketGoWork = 202
+    RocketArriveHome = 203
+    RocketArriveWork = 204
+    RocketWakeUp = 205
+    RocketPizzaDelivery = 206
 
