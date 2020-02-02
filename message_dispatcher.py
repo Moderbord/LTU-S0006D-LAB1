@@ -22,7 +22,8 @@ class MessageDispatcher:
         else:
             currentLoop = self.gm.GetLoop()
             telegram.dispatchTime = currentLoop + delay
-            self.priorityQ[msg] = telegram
+            key = str(senderID) + str(msg) + str(receiverID)
+            self.priorityQ[key] = telegram
 
     def DispatchDelayedMessage(self):
         currentLoop = self.gm.GetLoop()

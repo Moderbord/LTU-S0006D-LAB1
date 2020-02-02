@@ -1,6 +1,6 @@
 from enum import Enum
 
-updateIntervall = 0.1
+updateIntervall = 0.4
 
 # TODO implement locations, coordinates?
 LOC_DEFAULT = "DEFAULT"

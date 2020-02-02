@@ -4,6 +4,7 @@ from entities import Miner
 from entities import Wife
 import entity_hulk
 import entity_rocket
+import entity_thor
 
 from s_log import log
 from s_print import sysout
@@ -19,7 +20,7 @@ gm = GameManager()
 
 hulk = entity_hulk.Hulk(G.ID.Hulk, "Hulk")
 rocket = entity_rocket.Rocket(G.ID.Rocket, "Rocket")
-thor = entity_rocket.Rocket(G.ID.Thor, "Thor")
+thor = entity_thor.Thor(G.ID.Thor, "Thor")
 gm.AddEntity(hulk)
 gm.AddEntity(rocket)
 gm.AddEntity(thor)
@@ -46,8 +47,8 @@ for i in range(loops):
     log("\n<update>")
     gm.messageDispatcher.DispatchDelayedMessage()
     # Entities goes here
-    #hulk.Update()
-    #rocket.Update()
+    hulk.Update()
+    rocket.Update()
     thor.Update()
 
     # logs after update
