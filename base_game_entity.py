@@ -6,7 +6,7 @@ class BaseGameEntity:
     
     __nextValidID = 0
 
-    def __init__(self, val, name):
+    def __init__(self, val, name, gm):
         self.__setID(val)
         self.name = name
         self.location = globals.locations[globals.LOC_DEFAULT]
@@ -25,6 +25,7 @@ class BaseGameEntity:
         self.isTraversing = False
 
         self.fsm = StateMachine(self)
+        self.gm = gm
 
     def GetID(self):
         return self.__ID

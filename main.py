@@ -5,6 +5,7 @@ from entities import Wife
 import entity_hulk
 import entity_rocket
 import entity_thor
+import entity_groot
 
 from s_log import log
 from s_print import sysout
@@ -18,12 +19,15 @@ log("-------- NEW RUN --------\n")
 #inits
 gm = GameManager()
 
-hulk = entity_hulk.Hulk(G.ID.Hulk, "Hulk")
-rocket = entity_rocket.Rocket(G.ID.Rocket, "Rocket")
-thor = entity_thor.Thor(G.ID.Thor, "Thor")
+# Give reference to game manager to new entity
+hulk = entity_hulk.Hulk(G.ID.Hulk, "Hulk", gm)
+rocket = entity_rocket.Rocket(G.ID.Rocket, "Rocket", gm)
+thor = entity_thor.Thor(G.ID.Thor, "Thor", gm)
+groot = entity_groot.Groot(G.ID.Groot, "Groot", gm)
 gm.AddEntity(hulk)
 gm.AddEntity(rocket)
 gm.AddEntity(thor)
+gm.AddEntity(groot)
 
 #bob = Miner(globals.id_bob)
 #elsie = Wife(globals.id_elsie)
@@ -42,6 +46,7 @@ for i in range(loops):
     hulk.logStates()
     rocket.logStates()
     thor.logStates()
+    groot.logStates()
 
     # Game update
     log("\n<update>")
@@ -50,12 +55,14 @@ for i in range(loops):
     hulk.Update()
     rocket.Update()
     thor.Update()
+    groot.Update()
 
     # logs after update
     log("\n<Post vals>")
     hulk.logStates()
     rocket.logStates()
     thor.logStates()
+    groot.logStates()
     log("")
     print("\n")
 

@@ -11,16 +11,23 @@ import globals as G
 
 class Thor(BaseGameEntity):
 
-    def __init__(self, val, name):
-        super().__init__(val, name)
+    def __init__(self, val, name, gm):
+        super().__init__(val, name, gm)
         #self.location = G.locations[G.LOC_HULK_HOME]
         self.fsm.globalState = ThorGlobalstate()
-        self.fsm.currentState = ThorAtHome()
         self.social = 26
-        self.isHome = True
         self.planGoMovies = False
         self.aloneAtMovies = True
         #self.AddItem("MJOLNIR")
+
+        # Thor at work
+        if(self.gm.GetTime() >= 9 and self.gm.GetTime() <= 15):
+            self.fsm.currentState = ThorAtWork()
+            self.isWorking = True
+        # Thor at home
+        else:
+            self.fsm.currentState = ThorAtHome()
+            self.isHome = True
 
 ##------------------------------------------------------------------##
 class ThorGlobalstate(State):
@@ -104,7 +111,7 @@ class ThorAtHome(State):
             timeToMeet = entity.gm.HoursTo(21) + (24 if entity.gm.GetTime() <= 21 else 0)
             entity.gm.Broadcast(0, entity, G.ID.Hulk, G.MSG.D_ThorPlanGoMovies_1, timeToMeet)
             entity.gm.Broadcast(0, entity, G.ID.Rocket, G.MSG.D_ThorPlanGoMovies_1, timeToMeet)
-            #entity.gm.Broadcast(0, entity, G.ID.Groot, G.MSG.D_ThorPlanGoMovies_1, timeToMeet)
+            entity.gm.Broadcast(0, entity, G.ID.Groot, G.MSG.D_ThorPlanGoMovies_1, timeToMeet)
 
             entity.gm.Broadcast(timeToMeet - 1, entity, G.ID.Thor, G.MSG.GoMovies, None)
             entity.planGoMovies = True
@@ -212,14 +219,14 @@ class ThorAtStore(State):
 class ThorAtMovies(State):
 
     def Enter(self, entity):
-        out(entity, "*Enters the movie saloon*")
+        out(entity, "*Enters the movie saloon* 'The god of thunder has arrived!'")
         entity.planGoMovies = False
         entity.wathingMovie = False
 
         entity.gm.Broadcast(2, entity, G.ID.Hulk, G.MSG.MovieOver, None)
         entity.gm.Broadcast(2, entity, G.ID.Rocket, G.MSG.MovieOver, None)
         entity.gm.Broadcast(2, entity, G.ID.Thor, G.MSG.MovieOver, None)
-        #entity.gm.Broadcast(2, entity, G.ID.Groot, G.MSG.MovieOver, None)
+        entity.gm.Broadcast(2, entity, G.ID.Groot, G.MSG.MovieOver, None)
 
     def Execute(self, entity):
         if(entity.wathingMovie):

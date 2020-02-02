@@ -1,8 +1,8 @@
 class GameTime:
 
     def __init__(self):
-        self.time = 22
-        self.weekday = 6
+        self.time = 8
+        self.weekday = 0
         self.loop = 0
         self.timesteps = {
             0: "00:00",

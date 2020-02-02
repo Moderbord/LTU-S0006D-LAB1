@@ -17,6 +17,7 @@ class ID(Enum):
     Hulk = 3
     Rocket = 4
     Thor = 5
+    Groot = 6
 
 
 class MSG(Enum):

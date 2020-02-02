@@ -11,8 +11,6 @@ class GameManager:
         self.gameTime = GameTime()
 
     def AddEntity(self, entity):
-        # Give reference to game manager to new entity
-        entity.gm = self
         self.entityManager.Register(entity)
 
     def GetEntityName(self, ID):

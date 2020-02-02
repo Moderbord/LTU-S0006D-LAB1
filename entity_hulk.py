@@ -11,14 +11,21 @@ import globals as G
 
 class Hulk(BaseGameEntity):
 
-    def __init__(self, val, name):
-        super().__init__(val, name)
+    def __init__(self, val, name, gm):
+        super().__init__(val, name, gm)
         self.eLocation = G.locations[G.LOC_HULK_HOME]
         self.fsm.globalState = HulkGlobalState()
-        self.fsm.currentState = HulkAtHome()
-        self.isHome = True
         self.planGoMovies = False
         self.walkingToMovies = False
+
+        # Hulk at work
+        if(self.gm.GetTime() >= 9 and self.gm.GetTime() <= 12):
+            self.fsm.currentState = HulkAtWork()
+            self.isWorking = True
+        # Hulk at home
+        else:
+            self.fsm.currentState = HulkAtHome()
+            self.isHome = True
 
 ##------------------------------------------------------------------##
 class HulkGlobalState(State):
@@ -28,15 +35,18 @@ class HulkGlobalState(State):
 
     def Execute(self, entity):
         if(not entity.IsSleeping()):
-            entity.hunger -= 3
+            entity.hunger -= 4
             entity.thirst -= 2
-            entity.fatigue -= 5
+            entity.fatigue -= 4
             entity.social -= 5
 
         if(entity.IsThirsty()):
             if(entity.IsHome() or entity.IsWorking()):
                 out(entity, "'Hulk thirsty! *clunk*")
                 entity.thirst += 25
+
+        if(entity.gm.GetTime() == 13 and entity.IsWorking()):
+            entity.gm.Broadcast(randint(0, 2), entity, G.ID.Hulk, G.MSG.GoHome, None)
 
 
     def Exit(self, entity):
@@ -167,8 +177,7 @@ class HulkAtHomeDinner(State):
             out(entity, "'NO CHICKEN!?!? Hulk will starve...'")
             # Revert and msg Hulk to go store
             entity.fsm.RevertToPriorState()
-            if(entity.gm.GetTime() > 12 and entity.gm.GetTime() < 20):
-                entity.gm.Broadcast(0, entity, G.ID.Hulk, G.MSG.GoStore, None)
+            entity.gm.Broadcast(0, entity, G.ID.Hulk, G.MSG.GoStore, None)
 
     def Execute(self, entity):
         pass
@@ -224,7 +233,6 @@ class HulkAtWork(State):
     def Enter(self, entity):
         entity.isWorking = True
         out(entity, "*Enters work* 'Time to smash things!'")
-        entity.gm.Broadcast(4 + randint(0, 2), entity, G.ID.Hulk, G.MSG.GoHome, None)
 
     def Execute(self, entity):
         out(entity, "'Hulk work! Hulk SMASH! '")

@@ -11,16 +11,23 @@ import globals as G
 
 class Rocket(BaseGameEntity):
 
-    def __init__(self, val, name):
-        super().__init__(val, name)
+    def __init__(self, val, name, gm):
+        super().__init__(val, name, gm)
         #self.location = G.locations[G.LOC_HULK_HOME]
         self.fsm.globalState = RocketGlobalstate()
-        self.fsm.currentState = RocketAtWork()
-        self.isWorking = True
         self.planGoMovies = False
         self.walkingToMovies = False
         self.toxicity = 0
         self.AddItem("SNACKBAR")
+
+        # Rocket at work
+        if(self.gm.GetTime() >= 18 and self.gm.GetTime() <= 8):
+            self.fsm.currentState = RocketAtWork()
+            self.isWorking = True
+        # Rocket at home
+        else:
+            self.fsm.currentState = RocketAtHome()
+            self.isHome = True
 
     def IsDrunk(self):
         return self.toxicity > 40
